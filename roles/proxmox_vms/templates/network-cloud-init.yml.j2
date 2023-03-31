@@ -1,0 +1,18 @@
+#cloud-config
+
+network:
+  version: 2
+  ethernets:
+     enp0s18:
+       dhcp4: true
+       {% if ip_address is defined -%}
+       addresses:
+         - {{ ip_address }}/24
+       routes:
+       - to: default
+         via: {{ gateway }}
+       {% endif -%}
+       match:
+         name: enp*
+       set-name: enp0s18
+

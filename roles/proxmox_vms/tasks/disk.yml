@@ -1,0 +1,15 @@
+---
+- name: Grow existing disk
+  community.general.proxmox_disk:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    name: "{{ vm_name }}"
+    disk: "{{ disk_type }}"
+    size: "{{ size }}G"
+    state: resized
+  retries: 5
+  register: disk_status
+  until: disk_status is not failed
+

@@ -1,0 +1,37 @@
+#cloud-config
+
+chpasswd:
+  expire: False
+
+no_ssh_fingerprints: true
+ssh:
+  emit_keys_to_console: false
+ssh_pwauth: false
+
+users:
+  - name: {{ vm_user }}
+    groups: users, sudo, docker
+    lock_passwd: false
+    sudo: [ALL=(ALL) NOPASSWD:ALL]
+    shell: /bin/bash
+    hashed_passwd: {{ vm_password | password_hash('sha256')}}
+    ssh_authorized_keys:
+    {% for ssh_key in pub_ssh_key -%}
+      - {{ ssh_key }}
+    {% endfor %}
+
+hostname: {{ vm_name }}
+fqdn: {{ vm_name }}.{{ domain }}
+manage_etc_hosts: true
+
+package_update: true
+package_upgrade: true
+packages:
+{% for package in cloud_init_packages_default %}
+  - {{ package }}
+{% endfor %}
+{%- if cloud_init_packages_extension is defined %}
+{% for package in cloud_init_packages_extension %}
+  - {{ package }}
+{% endfor %}
+{%- endif %}

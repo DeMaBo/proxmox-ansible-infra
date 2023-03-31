@@ -1,0 +1,19 @@
+---
+# this is the standard path for proxmox cloud init
+cloud_init_hv_path: /var/lib/vz/snippets
+
+# https://pve.proxmox.com/wiki/Cloud-Init_Support#_custom_cloud_init_configuration
+cloud_init_packages_default:
+ - jq
+ - curl
+ - qemu-guest-agent
+ - vim
+
+cloud_init_packages_extension: []
+
+cloud_init_user_data: "user=local:snippets/user-{{ vm_name }}.yml"
+cloud_init_network_data: "network=local:snippets/network-{{ vm_name }}.yml"
+
+cloud_init_proxmox_paths: "{{ cloud_init_user_data }},{{ cloud_init_network_data }}"
+ip_address: undef
+gateway: ""

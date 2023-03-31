@@ -1,0 +1,8 @@
+---
+# Defaults which should be overwritten in the globals.yml
+# Authentication parameters
+pv_auth: ""
+api_token_id: ""  # Password should be encrypted with ansible-vault as minimum
+api_token_secret: ""
+api_proxmox_node: ""
+default_proxmox_node: "Node01"

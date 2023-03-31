@@ -1,0 +1,50 @@
+---
+- name: Stop VM "{{ vm_name }}"
+  community.general.proxmox_kvm:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    node: "{{ default_proxmox_node }}"
+    name: "{{ vm_name }}"
+    state: stopped
+  tags:
+    - delete
+    - never
+
+- name: "Pause a sec after vm creation"
+  pause:
+    seconds: 5
+
+- name: Delete VM "{{ vm_name }}"
+  community.general.proxmox_kvm:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    node: "{{ default_proxmox_node }}"
+    name: "{{ vm_name }}"
+    state: absent
+  tags:
+    - delete
+    - never
+
+- name: "Delete cloud init user ({{ cloud_init_hv_path }}) file "
+  ansible.builtin.file:
+    path: "{{ cloud_init_hv_path }}/user-{{ vm_name }}.yml"
+    state: absent
+    owner: root
+    group: root
+  tags:
+    - delete
+    - never
+
+- name: "Delete cloud init network ({{ cloud_init_hv_path }}) file "
+  ansible.builtin.file:
+    path: "{{ cloud_init_hv_path }}/network-{{ vm_name }}.yml"
+    state: absent
+    owner: root
+    group: root
+  tags:
+    - delete
+    - never

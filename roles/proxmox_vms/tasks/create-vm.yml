@@ -1,0 +1,55 @@
+---
+- name: Creating new virtual machine with name "{{ vm_name }}"
+  community.general.proxmox_kvm:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    name: "{{ vm_name }}"
+    node: "{{ default_proxmox_node }}"
+    clone: "{{ vm_template }}"
+    full: false
+    ide:
+      ide2: 'local:cloudinit,format=qcow2'
+    net:
+      net0: "virtio,bridge={{ bridge_name | default(vmbr0) }},firewall={{ firewall_enabled | default(false) }}"
+    timeout: 300
+  register: proxmox_task
+  until: proxmox_task is not failed
+
+- name: "Pause a sec after vm creation"
+  pause:
+    seconds: 5
+  when: proxmox_task.msg.find("already exists") == -1
+
+- name: Update VM "{{ vm_name }}" configuration
+  community.general.proxmox_kvm:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    node: "{{ default_proxmox_node }}"
+    update: true
+    cicustom: "{{ cloud_init_proxmox_paths }}"
+    name: "{{ vm_name }}"
+    memory: "{{ memory }}"
+    cores: "{{ cpu_cores }}"
+    vcpus: "{{ vcpus }}"
+  register: proxmox_update_task
+  retries: 5
+  until: proxmox_update_task.changed
+
+- include_tasks: disk.yml
+
+- name: Start VM "{{ vm_name }}"
+  community.general.proxmox_kvm:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    node: "{{ default_proxmox_node }}"
+    name: "{{ vm_name }}"
+    state: started
+  register: vm_status
+  retries: 5
+  until: vm_status is not failed

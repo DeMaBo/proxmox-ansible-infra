@@ -1,0 +1,34 @@
+---
+- name: "Lets wait a little so the cloud-config can run the first time"
+  pause:
+    minutes: 2
+
+- name: "Stop VM {{ vm_name }}"
+  community.general.proxmox_kvm:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    node: "{{ default_proxmox_node }}"
+    name: "{{ vm_name }}"
+    state: stopped
+
+- name: "Create new snapshot of vm {{ vm_name }}"
+  community.general.proxmox_snap:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    hostname: "{{ vm_name }}"
+    state: present
+    snapname: startup-status
+
+- name: "Start VM {{ vm_name }}"
+  community.general.proxmox_kvm:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    node: "{{ default_proxmox_node }}"
+    name: "{{ vm_name }}"
+    state: started

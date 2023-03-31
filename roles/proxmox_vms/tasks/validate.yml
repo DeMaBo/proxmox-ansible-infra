@@ -1,0 +1,9 @@
+---
+- name: validate parameters
+  ansible.builtin.assert:
+    that:
+      - pv_auth is defined
+      - api_token_id is defined
+      - api_token_secret is defined
+      - api_proxmox_node is defined
+      - default_proxmox_node is defined

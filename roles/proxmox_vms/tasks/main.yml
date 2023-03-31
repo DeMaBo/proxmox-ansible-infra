@@ -1,0 +1,22 @@
+---
+- include_tasks: validate.yml
+  tags:
+    - always
+
+- include_tasks: create-cloud-init-config.yml
+  tags:
+    - provision
+
+- include_tasks: create-vm.yml
+  tags:
+    - provision
+
+- include_tasks: snapshot.yml
+  when: proxmox_task.msg.find("already exists") == -1
+  tags:
+    - provision
+
+- include_tasks: delete-vm.yml
+  tags:
+    - never
+    - delete

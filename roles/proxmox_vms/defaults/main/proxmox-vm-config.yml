@@ -1,0 +1,18 @@
+---
+# Default parameter to create the vm
+#domain
+#vm_name: ""
+#memory: ""
+#vcpus: ""
+#cpu_cores: ""
+#vm_user: ""
+#vm_password: ""
+#vm_template: ""  # name of the template, not the vmid
+#size: ""  # need to be set as int in GB
+disk_type: sata0
+# Customize the bridge for the virtual machine
+# bridge_name:
+
+# OPTIONAL Variable
+# firewall_enabled: ""  # is disabled by default, if needed to enable the firewall: true
+
