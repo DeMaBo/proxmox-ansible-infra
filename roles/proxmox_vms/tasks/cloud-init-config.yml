@@ -3,6 +3,7 @@
   ansible.builtin.stat:
     path: "{{ cloud_init_hv_path }}"
   register: cloud_init
+  delegate_to: proxmox_instance
 
 - name: "Create cloud init ({{ cloud_init_hv_path }}) folder, if not exists"
   ansible.builtin.file:
@@ -12,14 +13,17 @@
     owner: root
     group: root
   when: cloud_init.stat.islink is not defined
+  delegate_to: proxmox_instance
 
 - name: "Template the network cloud-init file ({{ cloud_init_hv_path }}/network-{{ vm_name }}.yml)"
   ansible.builtin.template:
     src: "network-cloud-init.yml.j2"
     dest: "{{ cloud_init_hv_path }}/network-{{ vm_name }}.yml"
+  delegate_to: proxmox_instance
 
 - name: "Template the user cloud-init file ({{ cloud_init_hv_path }}/user-{{ vm_name }}.yml)"
   ansible.builtin.template:
     src: "user-cloud-init.yml.j2"
     dest: "{{ cloud_init_hv_path }}/user-{{ vm_name }}.yml"
+  delegate_to: proxmox_instance
 

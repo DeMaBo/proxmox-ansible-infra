@@ -9,7 +9,8 @@
 #vm_password: ""
 #vm_template: ""  # name of the template, not the vmid
 #size: ""  # need to be set as int in GB
-disk_type: sata0
+disk_type: sata
+storage_drive: local-zfs
 # Customize the bridge for the virtual machine
 # bridge_name:
 

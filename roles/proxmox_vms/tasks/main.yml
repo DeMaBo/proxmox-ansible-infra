@@ -1,22 +1,24 @@
 ---
-- include_tasks: validate.yml
+- include: validate.yml
+  delegate_to: localhost
+  when:
   tags:
     - always
 
-- include_tasks: create-cloud-init-config.yml
+- include: create-vm.yml
+  delegate_to: localhost
   tags:
     - provision
 
-- include_tasks: create-vm.yml
+- include: snapshot.yml
+  when:
+    - proxmox_task.msg.find("already exists") == -1
+  delegate_to: localhost
   tags:
     - provision
 
-- include_tasks: snapshot.yml
-  when: proxmox_task.msg.find("already exists") == -1
-  tags:
-    - provision
-
-- include_tasks: delete-vm.yml
+- include: delete-vm.yml
+  delegate_to: localhost
   tags:
     - never
     - delete

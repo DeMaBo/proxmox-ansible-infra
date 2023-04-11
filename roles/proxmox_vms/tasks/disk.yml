@@ -6,10 +6,29 @@
     api_token_secret: "{{ api_token_secret }}"
     api_host: "{{ api_proxmox_node }}"
     name: "{{ vm_name }}"
-    disk: "{{ disk_type }}"
-    size: "{{ size }}G"
+    disk: "{{ standard_disk.type }}0"
+    size: "{{ standard_disk.size }}G"
+    ssd: "{{ ssd_enabled | default(false) }}"
     state: resized
   retries: 5
   register: disk_status
   until: disk_status is not failed
 
+- name: Add new disk
+  community.general.proxmox_disk:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    name: "{{ vm_name }}"
+    disk: "{{ item.type }}{{ my_idx | int + 1 }}"
+    size: "{{ item.size }}G"
+    storage: "{{ storage_drive }}"
+    state: present
+  retries: 5
+  register: add_new_disk_status
+  until: add_new_disk_status is not failed
+  with_items: "{{ additional_disks }}"
+  loop_control:
+    index_var: my_idx
+  when: additional_disks is defined

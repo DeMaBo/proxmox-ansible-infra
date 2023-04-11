@@ -1,18 +1,12 @@
 ---
 - hosts: all
+  gather_facts: false
   tasks:
+    - name: "Create cloud-init-template"
+      include_role:
+        name: proxmox_vms
+        tasks_from: cloud-init-config.yml
+
     - name: "Create the first vm"
       ansible.builtin.include_role:
         name: proxmox_vms
-      vars:
-        vm_name: "{{ item.vm_name }}"
-        memory: "{{ item.memory }}"
-        vcpus: "{{ item.vcpus }}"
-        cpu_cores: "{{ item.cpu_cores }}"
-        vm_user: "{{ item.vm_user }}"
-        vm_password: "{{ item.vm_password }}"
-        vm_template: "{{ item.vm_template}}"
-        size: "{{ item.size }}"
-        ip_address: "{{ item.ip_address }}"
-      with_items: "{{ vm_list }}"
-
