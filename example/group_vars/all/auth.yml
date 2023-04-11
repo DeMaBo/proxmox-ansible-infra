@@ -1,0 +1,7 @@
+---
+# Needs PVEAdmin permissions for this use-case
+pv_auth: "<user>@pam"
+api_token_id: "< token from proxmox >"
+api_token_secret: "< api secret from proxmox >"
+api_proxmox_node: "< fqdn > "
+default_proxmox_node: "< nodename where the vms will be deployed >"

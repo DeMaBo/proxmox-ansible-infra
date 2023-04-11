@@ -1,0 +1,12 @@
+---
+all:
+  hosts:
+    proxmox_instance:
+      ansible_ssh_host: # important for the cloud-config file
+      ansible_user: # important for the cloud-config file
+    example-vm:
+      ansible_ssh_host: # private IP (behind firewall)
+  children:
+    development:
+      hosts:
+        example-vm:

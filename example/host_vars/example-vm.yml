@@ -1,0 +1,14 @@
+vm_name: example
+memory: 4096
+vcpus: 4
+cpu_cores: 4
+users:
+  - name: "example"
+    password: "whateveryoulike"
+    pub_ssh_key:
+      - ""
+standard_disk:
+  size: 50
+  type: sata
+  ssd_enabled: true
+ip_address: "< static LAN IP address, if needed >"
