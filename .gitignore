@@ -1,4 +1,4 @@
 group_vars/**
+host_vars/**
 hosts.yml
 venv/
-
