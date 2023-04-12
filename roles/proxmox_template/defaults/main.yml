@@ -1,0 +1,18 @@
+---
+template:
+  id:
+  name:
+  format: "qcow2"
+
+proxmox_iso_path: "/var/lib/vz/template/iso"
+
+cloud_init_template_url:
+
+bridge_name: vmbr0
+storage_type: ""
+ide_config: "{{ storage_type }}:cloudinit"
+bootdisk:
+serial_config: "socket"
+# vga choices: ['std', 'cirrus', 'vmware', 'qxl', 'serial0', 'serial1', 'serial2', 'serial3', 'qxl2', 'qxl3', 'qxl4']
+vga:
+memory:

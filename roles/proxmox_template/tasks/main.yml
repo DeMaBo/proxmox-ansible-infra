@@ -1,0 +1,63 @@
+---
+- name: Download file {{ template.name }}
+  get_url:
+    url: "{{ cloud_init_template_url }}"
+    dest: "{{ proxmox_iso_path }}/{{ template.name }}.{{ template.format }}"
+
+- name: Creating new vm with name {{ template.name }}
+  community.general.proxmox_kvm:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    node: "{{ default_proxmox_node }}"
+    name: "{{ template.name }}"
+    vmid: "{{ template.id }}"
+    net:
+      net0: "virtio,bridge={{ bridge_name | default(vmbr0) }},firewall={{ firewall_enabled | default(false) }}"
+    memory: "{{ memory }}"
+    ide:
+      ide2: "{{ ide_config }}"
+    timeout: 300
+  register: proxmox_task
+  retries: 5
+  until: proxmox_task is not failed
+
+
+- name: import disk to vm
+  command: >
+    qm importdisk {{ template.id }} 
+    {{ proxmox_iso_path }}/{{ template.name }}.{{ template.format }} 
+    {{ storage_type }}
+  retries: 5
+  when: proxmox_task is not failed
+  register: import_status
+  until: import_status.rc != -1
+
+- name: set correct disk to vm
+  command: "qm set {{ template.id }} --{{ bootdisk }} {{ storage_type }}:vm-{{ template.id }}-disk-0 "
+  retries: 5
+  when: import_status is not failed
+  register: disk_update_status
+  until: disk_update_status.rc != -1
+
+- name: Change vm {{ template.name }} to template
+  community.general.proxmox_kvm:
+    api_user: "{{ pv_auth }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
+    api_host: "{{ api_proxmox_node }}"
+    node: "{{ default_proxmox_node }}"
+    name: "{{ template.name }}"
+    vmid: "{{ template.id }}"
+    serial:
+      serial0: "{{ serial_config }}"
+    vga: "{{ vga }}"
+    bootdisk: "{{ bootdisk }}"
+    proxmox_default_behavior: "{{ proxmox_default_behavior | default('compatibility') }}"
+    update: true
+    template: yes
+    timeout: 300
+  register: proxmox_template
+  retries: 5
+  until: proxmox_template is not failed

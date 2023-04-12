@@ -1,0 +1,7 @@
+---
+- hosts: proxmox_instance
+  gather_facts: false
+  tasks:
+    - name: "Create vm-template"
+      include_role:
+        name: proxmox_template
