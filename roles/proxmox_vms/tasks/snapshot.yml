@@ -12,6 +12,9 @@
     node: "{{ default_proxmox_node }}"
     name: "{{ vm_name }}"
     state: stopped
+  register: vm_status
+  retries: 5
+  until: vm_status is not failed
 
 - name: "Create new snapshot of vm {{ vm_name }}"
   community.general.proxmox_snap:
@@ -23,6 +26,10 @@
     state: present
     snapname: startup-status
 
+- name: pause a sec before starting the machine
+  pause:
+    seconds: 5
+
 - name: "Start VM {{ vm_name }}"
   community.general.proxmox_kvm:
     api_user: "{{ pv_auth }}"
@@ -32,3 +39,6 @@
     node: "{{ default_proxmox_node }}"
     name: "{{ vm_name }}"
     state: started
+  register: vm_status
+  retries: 5
+  until: vm_status is not failed

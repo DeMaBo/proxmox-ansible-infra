@@ -8,13 +8,14 @@
     name: "{{ vm_name }}"
     node: "{{ default_proxmox_node }}"
     clone: "{{ vm_template }}"
-    full: false
+    full: true
     ide:
       ide2: 'local:cloudinit,format=qcow2'
     net:
       net0: "virtio,bridge={{ bridge_name | default(vmbr0) }},firewall={{ firewall_enabled | default(false) }}"
-    timeout: 300
+    timeout: 30
   register: proxmox_task
+  retries: 10
   until: proxmox_task is not failed
 
 - name: "Pause a sec after vm creation"

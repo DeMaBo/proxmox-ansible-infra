@@ -11,6 +11,7 @@
 #size: ""  # need to be set as int in GB
 disk_type: sata
 storage_drive: local-zfs
+disk_format: raw
 # Customize the bridge for the virtual machine
 # bridge_name:
 

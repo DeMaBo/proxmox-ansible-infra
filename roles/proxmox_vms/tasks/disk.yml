@@ -21,14 +21,15 @@
     api_token_secret: "{{ api_token_secret }}"
     api_host: "{{ api_proxmox_node }}"
     name: "{{ vm_name }}"
-    disk: "{{ item.type }}{{ my_idx | int + 1 }}"
-    size: "{{ item.size }}G"
+    disk: "{{ item.type }}{{ my_idx +1 }}"
+    size: "{{ item.size }}"
     storage: "{{ storage_drive }}"
+    format: "{{ disk_format }}"
     state: present
   retries: 5
   register: add_new_disk_status
   until: add_new_disk_status is not failed
-  with_items: "{{ additional_disks }}"
+  loop: "{{ additional_disks }}"
   loop_control:
     index_var: my_idx
   when: additional_disks is defined
